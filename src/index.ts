@@ -1,7 +1,52 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from "elysia";
 
-const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
+const port = 8080;
+
+const OPERATION = {
+	JOIN: "join",
+	CANDIDATE: "candidate",
+	OFFER: "offer",
+	ANSWER: "answer",
+	UNSUBSCRIBE: "unsubscribe",
+};
+
+const app = new Elysia()
+	.ws("/ws", {
+		body: t.Object({
+			type: t.String(),
+			room: t.String(),
+			payload: t.Object({
+				candidate: t.Optional(t.Any()),
+				offer: t.Optional(t.Any()),
+				answer: t.Optional(t.Any()),
+			}),
+		}),
+		message(ws, message) {
+			switch (message.type) {
+				case OPERATION.JOIN:
+					ws.subscribe(message.room);
+					console.info(`Subscribed to the ${message.room}`);
+					break;
+				case OPERATION.UNSUBSCRIBE:
+					ws.unsubscribe(message.room);
+					console.info(`Unsubscribed from the ${message.room}`);
+					break;
+				case OPERATION.CANDIDATE:
+				case OPERATION.OFFER:
+				case OPERATION.ANSWER:
+					console.info(
+						`Publishing ${message.type} to ${message.room}`,
+					);
+					ws.publish(String(message.room), message);
+					break;
+				default:
+					console.log(`Unknown operation type: ${message.type}`);
+					break;
+			}
+		},
+	})
+	.listen(port);
 
 console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
+	`🐲: Server is running at ${app.server?.hostname}:${app.server?.port}`,
 );
