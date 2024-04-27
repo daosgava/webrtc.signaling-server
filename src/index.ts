@@ -15,11 +15,13 @@ const app = new Elysia()
 		body: t.Object({
 			type: t.String(),
 			room: t.String(),
-			payload: t.Object({
-				candidate: t.Optional(t.Any()),
-				offer: t.Optional(t.Any()),
-				answer: t.Optional(t.Any()),
-			}),
+			payload: t.Optional(
+				t.Object({
+					candidate: t.Optional(t.Any()),
+					offer: t.Optional(t.Any()),
+					answer: t.Optional(t.Any()),
+				}),
+			),
 		}),
 		message(ws, message) {
 			switch (message.type) {
