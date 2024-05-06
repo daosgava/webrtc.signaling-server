@@ -4,6 +4,7 @@ const port = 8080;
 
 const OPERATION = {
 	JOIN: "join",
+	NEW_USER: "new user",
 	CANDIDATE: "candidate",
 	OFFER: "offer",
 	ANSWER: "answer",
@@ -28,6 +29,7 @@ const app = new Elysia()
 				case OPERATION.JOIN:
 					ws.subscribe(message.room);
 					console.info(`Subscribed to the ${message.room}`);
+					ws.publish(String(message.room), { type: OPERATION.JOIN, room: message.room });
 					break;
 				case OPERATION.UNSUBSCRIBE:
 					ws.unsubscribe(message.room);
