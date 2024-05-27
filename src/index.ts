@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 
-const port = 8080;
+const port = 3000;
 
 const OPERATION = {
 	JOIN: "join",
